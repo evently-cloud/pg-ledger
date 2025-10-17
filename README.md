@@ -16,6 +16,8 @@ You will need to open a `psql` session and create a role plus two databases.
 
 `docker exec -it evently-postgres psql -U (whoami)`
 
+#### Create Databases
+
 To operate these databases, create an `evently` role for your application to use to connect.
 
 ```sql
@@ -40,11 +42,17 @@ ALTER DATABASE evently_dev SET log_min_messages TO INFO;
 
 Creates a dev database for evently development. You can close your Docker session.
 
+#### Update env files
+Update the env files, found in `./env`, to point to your database. They both currently point to localhost, with the user/pass defined in the above steps.
+
+* test.env is just for the database unit tests.
+* dev.env is for the development database.
+
+As always, if these are not local databases, do not commit these values! Probably should switch to default values instead of checked-in files.
+
 #### Install the schema
 
 To install the evently schema in the dev database, run this from the command line:
-
-## this isn't going to work unless you check in the .env file.
 
 `npm run reset-all`
 
