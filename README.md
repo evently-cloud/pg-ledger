@@ -1,16 +1,16 @@
 # pg-ledger
 
-Postgres DDLs, load scripts and tests for Evently's Postgres ledger store.
+Postgres DDLs, load scripts and tests for Evently's Postgres ledger store. This project requires Postgres 18 or later due to the use of the `crc32c()` function.
 
 ### Docker Postgres
 
-First create a docker volume to store data:
+First, create a docker volume to store data:
 
 `docker volume create postgres_data`
 
 Use this command (I use [Fish](https://fishshell.com) so the `whoami` part may need to be replaced) to pull and run the correct version of Postgres, configured for local development:
 
-`docker run --name evently-postgres -p 5432:5432 -e POSTGRES_USER=(whoami) -e POSTGRES_PASSWORD= -e POSTGRES_HOST_AUTH_METHOD=trust -v postgres_data:/var/lib/postgresql/data -d postgres`
+`docker run --name evently-postgres -p 5432:5432 -e POSTGRES_USER=(whoami) -e POSTGRES_PASSWORD= -e POSTGRES_HOST_AUTH_METHOD=trust -v postgres_data:/var/lib/postgresql -d postgres:18`
 
 You will need to open a `psql` session and create a role plus two databases.
 
@@ -52,8 +52,12 @@ As always, if these are not local databases, do not commit these values! Probabl
 
 #### Install the schema
 
+Install the node dependencies:
+
+`npm install`
+
 To install the evently schema in the dev database, run this from the command line:
 
-`npm run reset-all`
+`npm run load-all`
 
 If you want to run the db tests, run `npm test`.

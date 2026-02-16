@@ -123,7 +123,7 @@ BEGIN
                                      previous_event_id.ledger_id);
 
             -- calc checksum
-            checksum = evently._calc_crc32c(0, concat(
+            checksum = evently._crc32c(concat(
                     event_in,
                     evently._sorted_json(entities_in),
                     evently._sorted_json(meta_in),

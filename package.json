@@ -1,6 +1,6 @@
 {
   "name": "@evently-cloud/pg-ledger",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Evently Postgres Ledger",
   "author": "Matt Bishop",
   "license": "MIT",
@@ -12,16 +12,14 @@
   },
   "devDependencies": {
     "@node-rs/crc32": "1.10.6",
-    "@types/lodash": "4.17.20",
-    "@types/node": "24.8.1",
+    "@types/node": "24.10.13",
     "@types/yargs-interactive": "2.1.6",
     "long": "5.3.2",
-    "tsx": "4.20.6",
+    "tsx": "4.21.0",
     "typescript": "5.9.3"
   },
   "dependencies": {
     "env-sanitize": "2.0.0",
-    "lodash": "4.17.21",
     "postgres": "3.4.7"
   }
 }

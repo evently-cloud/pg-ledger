@@ -1,5 +1,4 @@
 import env from "env-sanitize"
-import {omitBy} from "lodash"
 import PG, {Options, Sql} from "postgres"
 
 
@@ -52,7 +51,20 @@ function gatherConfig(typeOpts: Options<any>): string | Options<any> {
   }
 
   //pg checks for the existence of keys, so take out the undefined keys.
-  const all = omitBy(envConfig, (v) => !v)
+  const all = omitUndefined(envConfig)
   console.info(JSON.stringify(all, null, 2))
   return all
+}
+
+function omitUndefined(obj: Record<string, any>) {
+  const out: Record<string, any> = {}
+
+  for (const key of Object.keys(obj)) {
+    const value = obj[key]
+    if (value !== undefined) {
+      out[key] = value
+    }
+  }
+
+  return out
 }

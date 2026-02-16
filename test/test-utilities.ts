@@ -84,51 +84,20 @@ test("setup", async (ctx) => {
   })
 
   await ctx.test("crc32c", async (t) => {
-    const stmt = (crc: number, input: string) => sql`SELECT evently._calc_crc32c(${crc}, ${input}) AS crc_value`
+    const stmt = (input: string) => sql`SELECT evently._crc32c(${input}) AS crc_value`
 
     await t.test("crc32c single", async () => {
       const expected = BigInt(crc32c("testing"))
-      const [{ crc_value }] = await stmt(0, "testing")
+      const [{ crc_value }] = await stmt("testing")
       strictEqual(crc_value, expected, "single crc32c matches")
     })
 
-    await t.test("crc32c multiple", async () => {
-      const values = ["a", "list", "of","📒𒍑", "554456", new Date().toString()]
-      const expected = values
-        .reduce((crc, value) => crc32c(value, crc), 0)
+    await t.test("crc32c unicode", async () => {
+      const value = "a list of 📒𒍑 554456" + new Date().toString()
+      const expected = BigInt(crc32c(value))
 
-      let actual = 0
-      for (const value of values) {
-        const [{ crc_value }] = await stmt(actual, value)
-        actual = crc_value
-      }
-      strictEqual(actual, BigInt(expected), "multiple crc32c matches")
-    })
-
-    await t.test("crc32c big string", async (t2) => {
-      const values = ["one", "{two}", "3", new Date().toString()]
-      const bigValue = values.join("")
-
-      await t2.test("in JS", async () => {
-        const expected = values
-          .reduce((crc, value) => crc32c(value, crc), 0)
-
-        const actual = crc32c(bigValue)
-        strictEqual(expected, actual)
-      })
-
-      await t2.test("in Postgres", async () => {
-        let expected = 0
-        for (const value of values) {
-          const [{ crc_value }] = await stmt(expected, value)
-          expected = crc_value
-        }
-
-        let actual = 0
-        const [{ crc_value }] = await stmt(actual, bigValue)
-        actual = crc_value
-        strictEqual(expected, actual)
-      })
+      const [{ crc_value }] = await stmt(value)
+      strictEqual(crc_value, expected, "unicode crc32c matches")
     })
   })
 })

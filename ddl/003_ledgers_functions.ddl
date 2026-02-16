@@ -15,10 +15,10 @@ DECLARE
     ts              CONSTANT    BIGINT      = extract(epoch FROM created) * 1000000;  -- microseconds
     ts_hex          CONSTANT    TEXT        = evently._padded_hex(ts, 16);
     entities        CONSTANT    TEXT        = '{}';
-    ledger_id       CONSTANT    BIGINT      = evently._calc_crc32c(0, concat(event, entities, meta, data, ts_hex)) & 0xfffffffc;
+    ledger_id       CONSTANT    BIGINT      = evently._crc32c(concat(event, entities, meta, data, ts_hex)) & 0xfffffffc;
     ledger_hex      CONSTANT    TEXT        = evently._padded_hex(ledger_id, 8);
-    prev_event_id   CONSTANT    TEXT        = evently._calc_crc32c(0, concat(ts_hex, evently._padded_hex(0, 8), ledger_hex));
-    checksum        CONSTANT    BIGINT      = evently._calc_crc32c(0, concat(event, entities, meta, data, ts_hex, ledger_hex, prev_event_id));
+    prev_event_id   CONSTANT    TEXT        = evently._crc32c(concat(ts_hex, evently._padded_hex(0, 8), ledger_hex));
+    checksum        CONSTANT    BIGINT      = evently._crc32c(concat(event, entities, meta, data, ts_hex, ledger_hex, prev_event_id));
     append_key      CONSTANT    TEXT        = gen_random_uuid()::TEXT;
     ledger_table    CONSTANT    TEXT        = evently._ledger_table(ledger_hex);
 BEGIN
