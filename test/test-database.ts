@@ -65,8 +65,8 @@ test("setup", async (ctx) => {
   const desc = "unit-testing ledger"
 
   const testLedgerId = await createLedgerStmt(ledger, desc)
-
-  const [{checksum, timestamp}] = await sql`SELECT timestamp, checksum FROM evently.ledger_base`
+  const [{ledger_table: ledgerTable}] = await sql`SELECT evently._ledger_table(${testLedgerId}) AS ledger_table`
+  const [{checksum, timestamp}] = await sql`SELECT timestamp, checksum FROM ${sql.unsafe(ledgerTable)}`
   const genesisEventId = {
     timestamp,
     checksum,

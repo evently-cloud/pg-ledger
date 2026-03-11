@@ -27,10 +27,10 @@ BEGIN
     VALUES (ledger_hex, created, name, description);
 
     -- Create a ledger table with inheritance
-    EXECUTE format('CREATE TABLE %I (LIKE evently.ledger_base
+    EXECUTE format('CREATE TABLE %I (
+                LIKE evently.ledger_base
                 INCLUDING CONSTRAINTS
-                INCLUDING INDEXES)
-                INHERITS (evently.ledger_base)',
+                INCLUDING INDEXES)',
            ledger_table);
 
     EXECUTE format('INSERT INTO %I (timestamp, previous_ts, checksum, append_key, event, entities, meta, data)
