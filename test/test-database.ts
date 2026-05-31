@@ -1,5 +1,5 @@
 import {randomUUID} from "crypto"
-import {doesNotReject, rejects, strictEqual} from "node:assert/strict"
+import {doesNotReject, ok, rejects, strictEqual} from "node:assert/strict"
 import {after, before, test} from "node:test"
 import {Sql} from "postgres"
 
@@ -218,8 +218,12 @@ test("setup", async (ctx) => {
               checksum,
               ledgerId: testLedgerId
             }, falseSelector),
-          /AFTER not found/,
-          "cannot insert non-existent previous_ts")
+          (err: any) => {
+            strictEqual(err.code, "EAFNF")
+            ok(err.message.startsWith("AFTER not found"))
+            return true
+          }
+        )
 
         await rejects(
           insertStmt(testLedgerId, timestamp, thingEventId1.timestamp, checksum, randomUUID(), thingDeletedEvent, testEntities, testMeta, testData),
@@ -263,12 +267,11 @@ test("setup", async (ctx) => {
             try {
               await appendStmt(pingEvent, testEntities, testMeta, {only:1}, randomUUID(), pingEventWorkId, selectorStmt)
               return "success"
-            } catch (e: any) {
-              if (e.message.startsWith("RACE")) {
+            } catch (err: any) {
+              if (err.code === "ERACE") {
                 return "race"
-              } else {
-                throw e
               }
+              throw err
             }
           }
           const appends = []
@@ -284,8 +287,11 @@ test("setup", async (ctx) => {
           const selectorStmt = Buffer.from(`meta @? '$.actor ? (@ == "unit-tests")'`, "utf8")
           await rejects(
             appendStmt(thingCreatedEvent, testEntities, testMeta, testData, randomUUID(), genesisEventId, selectorStmt),
-            /RACE CONDITION after mark/,
-            "cannot append with selector that has results"
+            (err: any) => {
+              strictEqual(err.code, "ERACE")
+              strictEqual(err.message, "RACE CONDITION after selector")
+              return true
+            }
           )
         })
       })

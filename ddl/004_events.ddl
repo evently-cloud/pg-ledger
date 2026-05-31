@@ -72,7 +72,8 @@ BEGIN
 
     IF exists IS NULL THEN
         RAISE EXCEPTION 'AFTER not found: {ledger: %, ledger_id: %, timestamp: %, checksum: %}',
-            ledger_table, event_id_in.ledger_id, event_id_in.timestamp, event_id_in.checksum;
+            ledger_table, event_id_in.ledger_id, event_id_in.timestamp, event_id_in.checksum
+            USING ERRCODE = 'EAFNF';
     END IF;
 END
 $$;
@@ -156,8 +157,9 @@ BEGIN
                 RETURN concat(mono_ts_hex, evently._padded_hex(checksum, 8), previous_event_id.ledger_id);
             END IF;
 
-            -- nothing inserted because events exist after the mark in the selector (not quiescent); no Exception raised
-            RAISE EXCEPTION 'RACE CONDITION after mark';
+            -- nothing inserted because selector matches events (not quiescent)
+            RAISE EXCEPTION 'RACE CONDITION after selector'
+                USING errcode = 'ERACE';
         EXCEPTION
             -- Adding an Exception handler slows down the function by 35%, roughly:
             -- https://devently.to/serpent7776/the-performance-cost-of-plpgsql-exception-block-in-postgres-4h22
