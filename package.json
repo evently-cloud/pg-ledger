@@ -12,14 +12,14 @@
   },
   "devDependencies": {
     "@node-rs/crc32": "1.10.6",
-    "@types/node": "24.10.13",
+    "@types/node": "26.2.0",
     "@types/yargs-interactive": "2.1.6",
     "long": "5.3.2",
-    "tsx": "4.21.0",
-    "typescript": "5.9.3"
+    "tsx": "4.23.12",
+    "typescript": "6.0.3"
   },
   "dependencies": {
     "env-sanitize": "2.0.0",
-    "postgres": "3.4.7"
+    "postgres": "3.4.9"
   }
 }
